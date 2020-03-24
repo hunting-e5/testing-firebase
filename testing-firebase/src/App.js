@@ -30,7 +30,8 @@ class App extends Component {
 
   handleClick(e) {
     e.preventDefault();
-    const {phoneNumber, password} = this.state;
+    var { phoneNumber, password } = this.state;
+    password = String(password);
     db.collection('users')
       .doc(phoneNumber)
       .get()
@@ -42,14 +43,17 @@ class App extends Component {
           }
 
           else { //등록된 유저일 경우
-            var userPassword = db.doc(`/users/${phoneNumber}`).get().then(doc => {
-                return doc.data().password;});
-            if(password === userPassword){
-              alert(`${phoneNumber}님, 환영합니다`);
-            }
-            else{
-              alert(``)
-            }
+            db.doc(`/users/${phoneNumber}`).get().then(function (doc) {
+              var userPassword = doc.data().password;
+              console.log(userPassword, password);
+              if (password === userPassword) {
+                alert(`${phoneNumber}님, 환영합니다`);
+              }
+              else {
+                alert("비밀번호를 다시 확인해주세요")
+              }
+            })
+
           }
         });
 
@@ -59,6 +63,7 @@ class App extends Component {
   }
 
   handleChange(e) {
+    console.log(e.target);
     this.setState({
       [e.target.name]: e.target.value
     })
@@ -68,7 +73,7 @@ class App extends Component {
     return (
       <form onSubmit={this.handleClick}>
         <h1>로그인</h1>
-          핸드폰 번호: <input 
+          핸드폰 번호: <input
           placeholder="핸드폰 번호"
           name="phoneNumber"
           value={this.state.phoneNumber}
@@ -77,11 +82,15 @@ class App extends Component {
           비밀번호: <input
           placeholder="비밀번호"
           name="password"
-          value={this.state.phoneNumber}
-          onChange={this.handleChange}/>
+          value={this.state.password}
+          onChange={this.handleChange} />
 
         <br />
         <button type="submit">추가하기</button>
+        <br />
+        <p>
+        <button type="submit">회원가입</button>
+        </p>
       </form>
 
     );
